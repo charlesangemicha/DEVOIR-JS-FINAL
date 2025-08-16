@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Menu - Le Gourmet</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+    <style>
+        
+        /* Styles généraux */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        /* Grille de plats */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Carte de plat */
+        .menu-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .menu-card-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-card h3 {
+            margin: 0 0 12px 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .menu-card p {
+            margin: 0 0 15px 0;
+            color: #666;
+            flex-grow: 1;
+            font-size: 0.95em;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+
+        .btn-ajouter {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-ajouter:hover {
+            background: #f70b6d;
+        }
+
+        /* Panier flottant */
+        .floating-panier {
+            position: fixed;
+            right: 30px;
+            top: 150px;
+            background: #f61180;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .floating-panier:hover {
+            background: #fc1066;
+            transform: translateY(-2px);
+        }
+
+
+        /* Catégories */
+        .menu-categories {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .category {
+            padding: 12px 25px;
+            margin: 0 10px 10px;
+            cursor: pointer;
+            background: #f8f8f8;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .category.active {
+            background: #f81592;
+            color: white;
+        }
+
+        /* Sections cachées */
+        .menu-section {
+            display: none;
+        }
+        
+        .menu-section.active {
+            display: block;
+        }
+        /* Styles du panier et boutons */
+        .panier-container {
+            position: fixed;
+            right: 20px;
+            top: 150px;
+            width: 300px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .menu-card {
+            position: center;
+            margin: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-commandes {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f62265;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-ajouter {
+            background: #ed219f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        #panier-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+
+        .panier-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .panier-total {
+            font-weight: bold;
+            text-align: right;
+            margin: 10px 0;
+        }
+
+        .btn-valider {
+            background: #e74c3c;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .menu-items.hidden {
+            display: none;
+        }
+
+        .menu-categories {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .category {
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            background: #f8f8f8;
+            border-radius: 4px;
+        }
+
+        .category.active {
+            background: #f246ad;
+            color: white;
+        }
+
+    </style>
+</head>
+
+<body>
+   <header>
+<nav class="navbar">
+    
+
+        </div>
+    <!-- Bouton hamburger -->
+    <div class="menu-toggle" id="menu-toggle">☰</div>
+     <div class="header-container">
+       
+    
+        <h1 class="restaurant-name">LE GOURMET RESTAURANT</h1>
+        <nav class="nav-under-title">
+            <a href="index.html">Accueil</a>
+            <a href="menu.html" class="active">Menu</a>
+            <a href="reservation.html">Réservation</a>
+            <a href="contact.html">Contact</a>
+            <a href="commande.html">Mes Commandes</a>
+            <a href="connexion.html">Connexion</a>
+        </nav>
+        
+    </div>
+</header>
+<button class="floating-panier-btn" onclick="window.location.href='commande.html'">
+        Voir mon panier
+    </button>
+
+
+    <main class="menu-page">
+        <h1>Notre Carte</h1>
+        
+        <section class="menu-categories">
+            <div class="category active" data-category="entrees">Entrées</div>
+            <div class="category" data-category="plats">Plats Principaux</div>
+            <div class="category" data-category="desserts">Desserts</div>
+            <div class="category" data-category="boissons">Boissons</div>
+        </section>
+
+        <section id="entrees" class="menu-section active">
+            <div class="menu-grid">
+                <!-- Ligne 1 -->
+                <article class="menu-card">
+                    <img src="akra.jpg" alt="AKRA">
+                    <div class="menu-card-content">
+                        <h3>AKRA</h3>
+                        <p>beignets de malanga</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(1, 'Terrine de campagne', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="bouletteViande.jpg" alt="BOULETTE DE VIANDE">
+                    <div class="menu-card-content">
+                        <h3>BOULETTE DE VIANDE</h3>
+                        <p>viande epicee</p>
+                        <div class="price">9€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(2, 'Soupe à l\'oignon', 9)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="quicheLoraine.jpg" alt="QUICHE LORRAINE">
+                    <div class="menu-card-content">
+                        <h3>QUICHE LORRAINE</h3>
+                        <p>tarte salee aux oeufs, creme,lardons et frommage</p>
+                        <div class="price">10€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(3, 'Salade de chèvre chaud', 10)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="soupOignon.jpg" alt="SOUPE A L'OIGNON">
+                    <div class="menu-card-content">
+                        <h3>SOUPE A L'OIGNON</h3>
+                        <p>servie avec pain et frommage fondu</p>
+                        <div class="price">15€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(4, 'Foie gras maison', 15)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 2 -->
+                <article class="menu-card">
+                    <img src="buffalowings.jpg" alt="BUFFALO WINGS">
+                    <div class="menu-card-content">
+                        <h3>BUFFALO WINGS</h3>
+                        <p>aile de poulet epice, servie avec sauce ranch</p>
+                        <div class="price">12€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(5, 'Carpaccio de boeuf', 12)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="mozzarella.jpg" alt="MOZZARELLA STICK">
+                    <div class="menu-card-content">
+                        <h3>MOZZARELLA STICK</h3>
+                        <p>botonnet de fromage frit</p>
+                        <div class="price">11€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(6, 'Avocat aux crevettes', 11)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="bannanePeze.jpg" alt="BANNANE PLANTIN FRIT">
+                    <div class="menu-card-content">
+                        <h3>BANNANE PLANTIN FRIT</h3>
+                        <p>bannane frit</p>
+                        <div class="price">14€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(7, 'Escargots de Bourgogne', 14)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="chiktayHareng.jpg" alt="CHIKTAY HARENG">
+                    <div class="menu-card-content">
+                        <h3>CHIKTAY HARENG</h3>
+                        <p>hareng emiette et epice</p>
+                        <div class="price">13€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(8, 'Saumon fumé', 13)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 3 -->
+                <article class="menu-card">
+                    <img src="chiliCarne.jpg" alt="CHILI CON CARNE">
+                    <div class="menu-card-content">
+                        <h3>CHILI CON CARNE</h3>
+                        <p>petit bol epice a base de boeuf, haricot et tomate</p>
+                        <div class="price">9€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(9, 'Fonds d\'artichaut', 9)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="coleslaw.jpg" alt="COLESLAW">
+                    <div class="menu-card-content">
+                        <h3>COLESLAW</h3>
+                        <p>salad de chou cru rape et carotte a la sauce cremeuse</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(10, 'Oeuf mayonnaise', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="cornet.jpg" alt="CORNET">
+                    <div class="menu-card-content">
+                        <h3>CORNET</h3>
+                        <p>pate Feuilleté a la viande</p>
+                        <div class="price">10€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(11, 'Ravioles du Dauphiné', 10)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="tarteSaumon.jpg" alt="Tartare de saumon">
+                    <div class="menu-card-content">
+                        <h3>TARTARE DE SAUMON</h3>
+                        <p>saumon cru marine avec avocat et citron</p>
+                        <div class="price">12€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(12, 'Tartare de saumon', 12)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 4 -->
+                <article class="menu-card">
+                    <img src="shrimpkoktel.jpg" alt="SHRIMP COCKTAIL">
+                    <div class="menu-card-content">
+                        <h3>SHRIMP COCKTAIL</h3>
+                        <p>crevette froide servie avec sauce cocktail</p>
+                        <div class="price">11€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(13, 'Asperges vertes', 11)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="saladRusseH.jpg" alt="SALADE RUSSE HAITIEN">
+                    <div class="menu-card-content">
+                        <h3>SALADE RUSSE HAITIEN"</h3>
+                        <p>salade froid cremeuse et colore</p>
+                        <div class="price">16€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(14, 'Gambas grillées', 16)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="frommage.jpg" alt="FEUILLETE AU FROMMAGE">
+                    <div class="menu-card-content">
+                        <h3>FEUILLETE AU FROMMAGE</h3>
+                        <p>pate Feuillete garni de frommage fondant a l'interieur</p>
+                        <div class="price">12€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(15, 'Terrine de poisson', 12)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="spagetthi.jpg" alt="SPAGETTHI">
+                    <div class="menu-card-content">
+                        <h3>SPAGETTHI</h3>
+                        <p>pate bouillante acompagne de sauce creole Haitien</p>
+                        <div class="price">10€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(16, 'Feuilleté aux champignons', 10)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 5 -->
+                <article class="menu-card">
+                    <img src="soupjoumou.jpg" alt="SOUPE DE GIRAUMON">
+                    <div class="menu-card-content">
+                        <h3>SOUPE DE GIRAUMON(SOUP JOUMOU)</h3>
+                        <p>recette traditionnelle Haitien</p>
+                        <div class="price">11€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(17, 'Boudin noir', 11)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="akraMorue.jpg" alt="AKRA MORUE">
+                    <div class="menu-card-content">
+                        <h3>AKRA DE MORUE</h3>
+                        <p>beignet de malanga acompagne de morue</p>
+                        <div class="price">28€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(18, 'Plateau de fruits de mer', 28)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="paincrevette.jpg" alt="PAIN AU CREVETTE">
+                    <div class="menu-card-content">
+                        <h3>PAIN AU CREVETTE</h3>
+                        <p>bol de pain au crevette</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(19, 'Velouté de potiron', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="patekode.jpg" alt="PATE KODE">
+                    <div class="menu-card-content">
+                        <h3>PATE KODE</h3>
+                        <p>feuillete au boeuf , poulet ou hareng</p>
+                        <div class="price">18€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(20, 'Plateau de charcuterie', 18)">Ajouter</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- SECTION PLATS (20) -->
+        <!-- ======================== -->
+        <section id="plats" class="menu-section">
+            <div class="menu-grid">
+                <!-- Ligne 1 -->
+                <article class="menu-card">
+                    <img src="griot.jpg" alt="GRIOT">
+                    <div class="menu-card-content">
+                        <h3>GRIOT</h3>
+                        <p>viande de porc frit</p>
+                        <div class="price">24€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(21, 'Magret de canard', 24)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="rizDjondjon.jpg" alt="RIZ DJON DJON">
+                    <div class="menu-card-content">
+                        <h3>RIZ DJON DJON</h3>
+                        <p>riz au champignon noir</p>
+                        <div class="price">22€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(22, 'Boeuf bourguignon', 22)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="dirilegume.jpg" alt="RIZ BLANC,SAUCE POIS NOIR, LEGUME">
+                    <div class="menu-card-content">
+                        <h3>RIZ BLANC,SAUCE POIS NOIR, LEGUME</h3>
+                        <p>plat Haitien</p>
+                        <div class="price">19€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(23, 'Risotto aux cèpes', 19)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="gratinmakaroni.jpg" alt="MACARONI GRATINE">
+                    <div class="menu-card-content">
+                        <h3>MACARONI GRATINE</h3>
+                        <p>pate gratine au  frommage et a la viande</p>
+                        <div class="price">26€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(24, 'Filet de bar', 26)">Ajouter</button>
+                    </div>
+                </article>
+            
+                <!-- Ligne 2 -->
+                <article class="menu-card">
+                    <img src="bouyonBef.jpg" alt="BOUILLON DE BOEUF">
+                    <div class="menu-card-content">
+                        <h3>BOUILLON DE BOEUF</h3>
+                        <p>soupe de boeuf et legume</p>
+                        <div class="price">20€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(25, 'Poulet fermier', 20)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="poissongriye.jpg" alt="POISSONS GRILLE">
+                    <div class="menu-card-content">
+                        <h3>POISSONS GRILLE</h3>
+                        <p>poisson epice et grille</p>
+                        <div class="price">28€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(26, 'Lotte à l\'armoricaine', 28)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="diriLalo.jpg" alt="RIZ ET LALO">
+                    <div class="menu-card-content">
+                        <h3>RIZ ET LALO"</h3>
+                        <p>plat haitien</p>
+                        <div class="price">25€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(27, 'Côte d\'agneau', 25)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="lazay.jpg" alt="LASAGNE">
+                    <div class="menu-card-content">
+                        <h3>LASAGNE</h3>
+                        <p>pate bouillant et sauce béchamel</p>
+                        <div class="price">18€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(28, 'Lasagnes maison', 18)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 3 -->
+                <article class="menu-card">
+                    <img src="casoulet.jpg" alt="CASSOULET">
+                    <div class="menu-card-content">
+                        <h3>CASSOULET</h3>
+                        <p>ragout de haricot blanc et viande</p>
+                        <div class="price">21€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(29, 'Cassoulet toulousain', 21)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="ratatouy.jpg" alt="RATATOUILLE">
+                    <div class="menu-card-content">
+                        <h3>RATATOUILLE</h3>
+                        <p>legume mijote</p>
+                        <div class="price">23€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(30, 'Canard à l\'orange', 23)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="maccheese.jpg" alt="MAC AND CHEESE">
+                    <div class="menu-card-content">
+                        <h3>MAC AND CHEESE</h3>
+                        <p>macaroni au frommage</p>
+                        <div class="price">32€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(31, 'Saint-Jacques poêlées', 32)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="roti.jpg" alt="POULET ROTI">
+                    <div class="menu-card-content">
+                        <h3>POULET ROTI</h3>
+                        <p>poulet roti au thym et citron</p>
+                        <div class="price">27€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(32, 'Osso buco de veau', 27)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 4 -->
+                <article class="menu-card">
+                    <img src="bbq.jpg" alt="BBQ RIBS">
+                    <div class="menu-card-content">
+                        <h3>BBQ RIBS</h3>
+                        <p>cote levee barbecue</p>
+                        <div class="price">38€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(33, 'Paella royale', 38)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="hotdog.jpg" alt="HOTDOG CLASSIC">
+                    <div class="menu-card-content">
+                        <h3>HOTDOG CLASSIC</h3>
+                        <p>saucice et du pain</p>
+                        <div class="price">30€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(34, 'Loup de mer', 30)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="pizza.jpg" alt="PIZZA AMERICAINE">
+                    <div class="menu-card-content">
+                        <h3>PIZZA AMERICAINE</h3>
+                        <p>pepperoni ou quatre frommage</p>
+                        <div class="price">35€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(35, 'Chateaubriand', 35)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="tacoBoeuf.jpg" alt="TACO AU BOEUF">
+                    <div class="menu-card-content">
+                        <h3>TACO AU BOEUF</h3>
+                        <p>plat americain</p>
+                        <div class="price">17€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(36, 'Ratatouille niçoise', 17)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 5 -->
+                <article class="menu-card">
+                    <img src="chiken.jpg" alt="MEAT-BALL">
+                    <div class="menu-card-content">
+                        <h3>MEAT-BALL</h3>
+                        <p>boulette de viande</p>
+                        <div class="price">22€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(37, 'Blanquette de veau', 22)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="moule mariniere.jpg" alt="MOULE MARINIERE">
+                    <div class="menu-card-content">
+                        <h3>MOULE MARINIERE"</h3>
+                        <p>moule fraiche au vin blan sec echarlote ou oignon</p>
+                        <div class="price">19€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(38, 'Moules-frites', 19)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="burger.jpg" alt="HAMBURGER">
+                    <div class="menu-card-content">
+                        <h3>HAMBURGER</h3>
+                        <p>plat americain</p>
+                        <div class="price">34€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(39, 'Turbot rôti', 34)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="coqvin.jpg" alt="COQ AU VIN">
+                    <div class="menu-card-content">
+                        <h3>COQ AU VIN</h3>
+                        <p>poulet mijote au vin rouge</p>
+                        <div class="price">42€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(40, 'Côte de boeuf', 42)">Ajouter</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- SECTION DESSERTS (20) -->
+        <!-- ======================== -->
+        <section id="desserts" class="menu-section">
+            <div class="menu-grid">
+                <!-- Ligne 1 -->
+                <article class="menu-card">
+                    <img src="mousseCHoco.jpg" alt="MOUSSE AU CHOCOLAT">
+                    <div class="menu-card-content">
+                        <h3>MOUSSE AU CHOCOLAT</h3>
+                        <p>Chocolat noir 70%</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(41, 'Mousse au chocolat', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="tartetatin.jpg" alt="TARTE TATIN">
+                    <div class="menu-card-content">
+                        <h3>TARTE TATIN</h3>
+                        <p>Crème fraîche maison</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(42, 'Tarte tatin', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="cremme brule.jpg" alt="CREME BRULE">
+                    <div class="menu-card-content">
+                        <h3>CREME BRULE</h3>
+                        <p>Vanille de Madagascar</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(43, 'Crème brûlée', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="painPatate.jpg" alt="PAIN PATATE">
+                    <div class="menu-card-content">
+                        <h3>PAIN PATATE</h3>
+                        <p>gateau dense a base de patate douce, lait de coco et fruit sec </p>
+                        <div class="price">9€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(44, 'Profiteroles', 9)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 2 -->
+                <article class="menu-card">
+                    <img src="cupcake.jpg" alt="CUPCAKE A LA VANILLE">
+                    <div class="menu-card-content">
+                        <h3>CUPCAKE A LA VANILLE</h3>
+                        <p>mini gateau mouelleux a la vanille</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(45, 'Tiramisu', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="begneit G.jpg" alt="BEIGNET GLACE">
+                    <div class="menu-card-content">
+                        <h3>BEIGNET GLACE</h3>
+                        <p>donut sucre </p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(46, 'Île flottante', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="rizLait.jpg" alt="RIZ AU LAIT">
+                    <div class="menu-card-content">
+                        <h3>RIZ AU LAIT</h3>
+                        <p>riz cuit dans du lait sucre et de la vanille</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(47, 'Fondant au chocolat', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="tarteCitron.jpg" alt="TARTE AU CITRON">
+                    <div class="menu-card-content">
+                        <h3>TARTE AU CITRON</h3>
+                        <p>Meringuée</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(48, 'Tarte au citron', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 3 -->
+                <article class="menu-card">
+                    <img src="ananaF.jpg" alt="ANANAS FLAMBE">
+                    <div class="menu-card-content">
+                        <h3>ANANAS FLAMBE</h3>
+                        <p>revenu au beurre sucre et caramelise</p>
+                        <div class="price">9€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(49, 'Crêpes Suzette', 9)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="mile feuille.jpg" alt="MILLE FEUILLE">
+                    <div class="menu-card-content">
+                        <h3>MILLE FEUILLE</h3>
+                        <p>Crème pâtissière</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(50, 'Millefeuille', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="beignetH.jpg" alt="BEIGNET HAITIEN">
+                    <div class="menu-card-content">
+                        <h3>BEIGNET HAITIEN</h3>
+                        <p>donut sucre Haitien</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(51, 'Clafoutis aux cerises', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="applepie.jpg" alt="APPLE PIE">
+                    <div class="menu-card-content">
+                        <h3>APPLE PIE</h3>
+                        <p>tarte au pomme enferme dans une pate croustillante</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(52, 'Paris-Brest', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 4 -->
+                <article class="menu-card">
+                    <img src="pouding a la banane.jpg" alt="POUDING A LA BANANE">
+                    <div class="menu-card-content">
+                        <h3>POUDING A LA BANANE</h3>
+                        <p>dessert cremeux a base de banane mure, lait sucre et epice</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" Onclick="addToPanier(53, 'Opéra', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="gateauCirop.jpg" alt="GATEAU AU SIROP DE CANNE">
+                    <div class="menu-card-content">
+                        <h3>GATEAU AU SIROP DE CANNE</h3>
+                        <p>mouilleux parfume au sucre de canne</p>
+                        <div class="price">6€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(54, 'Éclair au chocolat', 6)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="gateauAnanas.jpg" alt="GATEAU A L'ANANAS RENVERSE">
+                    <div class="menu-card-content">
+                        <h3>GATEAU A L'ANANAS RENVERSE</h3>
+                        <p>gateau mouilleux garni d'ananas caramelise</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(55, 'Tarte poire-amande', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="cheesecake.jpg" alt="CHEESE CAKE NEW YORKAIS">
+                    <div class="menu-card-content">
+                        <h3>CHEESE CAKE NEW YORKAIS</h3>
+                        <p>gateau cremeux au frommage garni de fruit</p>
+                        <div class="price">10€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(56, 'Soufflé au Grand Marnier', 10)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 5 -->
+                <article class="menu-card">
+                    <img src="brownieChoco.jpg" alt="BROWNIE AU CHOCOLAT">
+                    <div class="menu-card-content">
+                        <h3>BROWNIE AU CHOCOLAT</h3>
+                        <p>fondant au chocolat, dense et mouilleux avec des noix</p>
+                        <div class="price">12€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(57, 'Plateau de fromages', 12)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="tarteFraise.jpg" alt="TARTE AU FRAISE">
+                    <div class="menu-card-content">
+                        <h3>TARTE AU FRAISE</h3>
+                        <p>pate sucre garni de fraise patisiere et des fraises freches</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(58, 'Panna cotta', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="blancmage.jpg" alt="BLANC MANGER">
+                    <div class="menu-card-content">
+                        <h3>BLANC MANGER</h3>
+                        <p>flant a base de lait de coco, gelatine sucre,doux et frais</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(59, 'Baba au rhum', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="dousmakos.jpg" alt="DOUCE MAKOS">
+                    <div class="menu-card-content">
+                        <h3>DOUCE MAKOS</h3>
+                        <p>fudge haitien mabre a base de lait concentre, sucre, vanille et muscade </p>
+                        <div class="price">6€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(60, 'Sorbets maison', 6)">Ajouter</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ======================== -->
+        <!-- SECTION BOISSONS (20) -->
+        <!-- ======================== -->
+        <section id="boissons" class="menu-section">
+            <div class="menu-grid">
+                <!-- Ligne 1 -->
+                <article class="menu-card">
+                    <img src="cafeg.jpg" alt="CAFE GLACE">
+                    <div class="menu-card-content">
+                        <h3>CAFE GLACE</h3>
+                        <p>cafe froid sucre avec du lait et des glacons</p>
+                        <div class="price">3€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(61, 'Eau minérale', 3)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="kremas.jpg" alt="KREMAS">
+                    <div class="menu-card-content">
+                        <h3>KREMAS</h3>
+                        <p>liqueur cremeuse a base de lait concentre,noix de coco</p>
+                        <div class="price">5€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(62, 'Vin rouge maison', 5)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="cafelait.jpg" alt="CAFE AU LAIT">
+                    <div class="menu-card-content">
+                        <h3>CAFE AU LAIT</h3>
+                        <p>melange de cafe fort et de lait chaud</p>
+                        <div class="price">5€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(63, 'Vin blanc maison', 5)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="milshakeV.jpg" alt="MILKSHAKE A LA VANILLE">
+                    <div class="menu-card-content">
+                        <h3>MILKSHAKE A LA VANILLE</h3>
+                        <p>boisson froide a base de lait glace et arome vanille</p>
+                        <div class="price">12€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(64, 'Champagne', 12)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 2 -->
+                <article class="menu-card">
+                    <img src="limonade.jpg" alt="LIMONADE MAISON">
+                    <div class="menu-card-content">
+                        <h3>LIMONADE MAISON</h3>
+                        <p>boisson fraiche a base de citron sucre et eau petillante</p>
+                        <div class="price">2€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(65, 'Café', 2)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="smoothierouge.jpg" alt="SMOTHIE AUX FRUITS ROUGE">
+                    <div class="menu-card-content">
+                        <h3>SMOTHIE AUX FRUITS ROUGE</h3>
+                        <p>boisson epaisse mixer vec fraise, framboise, myrtille et yaourt</p>
+                        <div class="price">3€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(66, 'Thé', 3)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="jusCoro.jpg" alt="JUS DE COROSSOL">
+                    <div class="menu-card-content">
+                        <h3>JUS DE COROSSOL</h3>
+                        <p>jus naturel a texture douce</p>
+                        <div class="price">4€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(67, 'Jus de fruits', 4)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="chocolatC.jpg" alt="CHOCOLAT CHAUD">
+                    <div class="menu-card-content">
+                        <h3>CHOCOLAT CHAUD</h3>
+                        <p>boisson chaude et onctueuse a base de chocolat fondu et lait</p>
+                        <div class="price">3€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(68, 'Soda', 3)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 3 -->
+                <article class="menu-card">
+                    <img src="jusmange.jpg" alt="JUS DE MANGUE">
+                    <div class="menu-card-content">
+                        <h3>JUS DE MANGUE</h3>
+                        <p>jus sucre et parfume a base de mangue mure</p>
+                        <div class="price">4€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(69, 'Limonade maison', 4)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="coke.jpg" alt="COCA-COLA">
+                    <div class="menu-card-content">
+                        <h3>COCA-COLA</h3>
+                        <p>soda sucre et gazeux</p>
+                        <div class="price">4€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(70, 'Bière pression', 4)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="teapeach.jpg" alt="THE GLACE A LA PECHE">
+                    <div class="menu-card-content">
+                        <h3>THE GLACE A LA PECHE</h3>
+                        <p>the infuse parfume  a la peche</p>
+                        <div class="price">8€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(71, 'Cocktail maison', 8)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="guyave.jpg" alt="JUS DE GOYAVE">
+                    <div class="menu-card-content">
+                        <h3>JUS DE GOYAVE</h3>
+                        <p>boisson fruite et sucre a base de goyave mure</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(72, 'Whisky', 7)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 4 -->
+                <article class="menu-card">
+                    <img src="orangeade.jpg" alt="ORANGEADE">
+                    <div class="menu-card-content">
+                        <h3>ORANGEADE</h3>
+                        <p>boisson petillante au gout d'orange sucre et acidule</p>
+                        <div class="price">6€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(73, 'Digestif', 6)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="juscanne.jpg" alt="JUS DE CANNE">
+                    <div class="menu-card-content">
+                        <h3>JUS DE CANNE</h3>
+                        <p>jus frais extrait de la canne a sucre</p>
+                        <div class="price">9€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(74, 'Mojito', 9)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="rhumpunch.jpg" alt="RHUM PUNCH">
+                    <div class="menu-card-content">
+                        <h3>RHUM PUNCH</h3>
+                        <p>cocktail tropical a base de rhum et jus de fruit</p>
+                        <div class="price">3€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(75, 'Sirop à l\'eau', 3)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="thementhe.jpg" alt="THE  LA MENTHE">
+                    <div class="menu-card-content">
+                        <h3>THE  LA MENTHE</h3>
+                        <p>infusion fraiche a base de menthe verte servie chaude</p>
+                        <div class="price">4€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(76, 'Chocolat chaud', 4)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <!-- Ligne 5 -->
+                <article class="menu-card">
+                    <img src="citronadeg.jpg" alt="CITRONADE AU GINGEMBRE">
+                    <div class="menu-card-content">
+                        <h3>CITRONADE AU GINGEMBRE</h3>
+                        <p>boisson a base de citron presse et gingembre</p>
+                        <div class="price">6€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(77, 'Vin chaud', 6)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="tamarin.jpg" alt="JUS DE TAMARIN">
+                    <div class="menu-card-content">
+                        <h3>JUS DE TAMARIN</h3>
+                        <p>boisson acidule prepare a partir de pulpe de tamarin</p>
+                        <div class="price">5€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(78, 'Milkshake', 5)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="perrierc.jpg" alt="PERRIER CITRON">
+                    <div class="menu-card-content">
+                        <h3>PERRIER CITRON</h3>
+                        <p>eau mineral petillante arromatise au citron</p>
+                        <div class="price">5€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(79, 'Smoothie', 5)">Ajouter</button>
+                    </div>
+                </article>
+                
+                <article class="menu-card">
+                    <img src="icedtea.jpg" alt="ICED TEA">
+                    <div class="menu-card-content">
+                        <h3>ICED TEA</h3>
+                        <p>the noir infuse et servi froid avec du citron et des fruits</p>
+                        <div class="price">7€</div>
+                        <button class="btn-ajouter" onclick="addToPanier(80, 'Apéritif maison', 7)">Ajouter</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+        <button onclick="addToPanier(1, 'Nom du plat', 10)">Ajouter</button>
+    </main>
+       
+    <script>
+        // Gestion des catégories de menu
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélectionner tous les éléments de catégorie
+    const categories = document.querySelectorAll('.category');
+    
+    // Sélectionner toutes les sections de menu
+    const menuSections = document.querySelectorAll('.menu-section');
+
+    // Fonction pour changer de catégorie
+    function switchCategory(categoryId) {
+        // Mettre à jour l'état actif des boutons
+        categories.forEach(category => {
+            if (category.getAttribute('data-category') === categoryId) {
+                category.classList.add('active');
+            } else {
+                category.classList.remove('active');
+            }
+        });
+
+        // Afficher/masquer les sections
+        menuSections.forEach(section => {
+            if (section.id === categoryId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+    }
+
+    // Ajouter les écouteurs d'événements
+    categories.forEach(category => {
+        category.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-category');
+            switchCategory(categoryId);
+        });
+    });
+
+    // Activer la première catégorie par défaut
+    switchCategory('entrees');
+});
+// Version simplifiée et testée
+
+// Stockage des données
+const getPanier = (email) => JSON.parse(localStorage.getItem(`panier_${email}`)) || [];
+const savePanier = (email, panier) => localStorage.setItem(`panier_${email}`, JSON.stringify(panier));
+
+// Gestion du panier
+function updatePanierDisplay(email) {
+    const panier = getPanier(email);
+    const panierItems = document.getElementById('panier-items');
+    const panierTotal = document.getElementById('panier-total');
+    
+    if (!panierItems || !panierTotal) return;
+    
+    panierItems.innerHTML = '';
+    let total = 0;
+    
+    panier.forEach((item, index) => {
+        total += item.prix * item.quantite;
+        panierItems.innerHTML += `
+            <div class="panier-item">
+                <span>${item.nom} x${item.quantite}</span>
+                <span>${(item.prix * item.quantite).toFixed(2)}€</span>
+                <button onclick="removeFromCart(${index})">×</button>
+            </div>
+        `;
+    });
+    
+    panierTotal.textContent = total.toFixed(2);
+}
+
+// Fonctions de base
+function addToPanier(id, nom, prix) {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) {
+        alert("Connectez-vous pour commander");
+        window.location.href = 'connexion.html';
+        return;
+    }
+
+    const panier = getPanier(user.email);
+    const existingItem = panier.find(item => item.id === id);
+    
+    if (existingItem) {
+        existingItem.quantite += 1;
+    } else {
+        panier.push({ id, nom, prix, quantite: 1 });
+    }
+    
+    savePanier(user.email, panier);
+    updatePanierDisplay(user.email);
+    alert(`${nom} ajouté au panier`);
+}
+
+function removeFromCart(index) {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) return;
+    
+    const panier = getPanier(user.email);
+    panier.splice(index, 1);
+    savePanier(user.email, panier);
+    updatePanierDisplay(user.email);
+}
+
+function validerCommande() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) {
+        alert("Connectez-vous pour valider");
+        window.location.href = 'connexion.html';
+        return;
+    }
+
+    const panier = getPanier(user.email);
+    if (panier.length === 0) {
+        alert("Panier vide !");
+        return;
+    }
+
+    const commande = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        articles: [...panier],
+        total: panier.reduce((sum, item) => sum + (item.prix * item.quantite), 0)
+    };
+
+    // Sauvegarde la commande
+    const commandes = JSON.parse(localStorage.getItem(`commandes_${user.email}`)) || [];
+    commandes.push(commande);
+    localStorage.setItem(`commandes_${user.email}`, JSON.stringify(commandes));
+
+    // Vide le panier
+    savePanier(user.email, []);
+    updatePanierDisplay(user.email);
+    alert("Commande validée !");
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) {
+        window.location.href = 'connexion.html';
+        return;
+    }
+
+    updatePanierDisplay(user.email);
+});
+// Activer/désactiver le menu hamburger
+const menuToggle = document.getElementById("menu-toggle");
+const navLinks = document.getElementById("nav-links");
+
+menuToggle.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+});
+
+
+</script>
+    
+</body>
+</html>

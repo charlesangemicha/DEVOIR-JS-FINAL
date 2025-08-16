@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Commandes - Le Gourmet</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+  <style>
+    
+  header img {
+  height: 80px;
+  border-radius: 10px;
+  background: white;
+  padding: 5px;
+}
+
+/* Lien Accueil ou menu */
+.logo nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  margin-right: 20px;
+}
+    .btn-view {
+    background: #17a2b8;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.btn-view:hover {
+    background: #138496;
+}
+    /* Badges de statut */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.status-badge[data-status="En attente"] { background: #FFF3CD; color: #856404; }
+.status-badge[data-status="Acceptée"] { background: #D4EDDA; color: #155724; }
+.status-badge[data-status="Annulée"] { background: #F8D7DA; color: #721C24; }
+
+/* Boutons d'action */
+.btn-accept, .btn-cancel, .btn-delete {
+    padding: 5px 10px;
+    margin: 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-accept { background: #28a745; }
+.btn-cancel { background: #dc3545; }
+.btn-delete { background: #6c757d; }
+
+/* Lignes colorées */
+tr.order-en-attente { background-color: #FFF3CD20; }
+tr.order-annulée { background-color: #F8D7DA20; }
+
+/* Alertes */
+.admin-alert {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    z-index: 1000;
+}
+    /* ====== Styles spécifiques à la page (garde ton style.css existant) ====== */
+    .panier-flottant{position:fixed;right:20px;top:150px;width:300px;background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1);z-index:100}
+    .panier-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .panier-title{font-size:1.2em;font-weight:700}
+    .btn-voir-commandes{background:#3498db;color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer}
+    #panier-items{max-height:300px;overflow-y:auto;margin:10px 0}
+    .panier-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
+    .panier-total{font-weight:700;text-align:right;margin:10px 0}
+    .btn-valider{background:#e74c3c;color:#fff;width:100%;padding:10px;border:none;border-radius:4px;cursor:pointer}
+
+    .commandes-container{max-width:1200px;margin:20px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+    .section-title{color:#2c3e50;border-bottom:2px solid #3498db;padding-bottom:10px;margin-top:30px}
+    #commandes-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+    #commandes-table th,#commandes-table td{padding:12px 15px;border:1px solid #e0e0e0;text-align:left}
+    #commandes-table th{background:#3498db;color:#fff;font-weight:600}
+    #commandes-table tr:nth-child(even){background:#f9f9f9}
+    #commandes-table tr:hover{background:#f1f1f1}
+    .statut{padding:5px 10px;border-radius:4px;font-weight:500;text-align:center;display:inline-block;min-width:100px}
+    .statut-en-attente{color:#f39c12;background:#fef5e7}
+    .statut-en-preparation{color:#e67e22;background:#fdf0e6}
+    .statut-livre{color:#27ae60;background:#e8f5e9}
+    .statut-annule{color:#e74c3c;background:#fdedec}
+
+    #current-cart{background:#f8f9fa;padding:20px;border-radius:8px;margin-bottom:30px;border-left:4px solid #3498db}
+    .cart-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee}
+    .empty-message{text-align:center;padding:40px 20px;font-size:16px;color:#666;background:#f9f9f9;border-radius:8px;margin:20px 0}
+    .btn{background:#3498db;color:#fff;padding:10px 15px;border:none;border-radius:4px;cursor:pointer;text-decoration:none;display:inline-block;margin-top:10px}
+    .btn:hover{background:#2980b9}
+
+    @media (max-width:768px){
+      #commandes-table{display:block;overflow-x:auto}
+      .commandes-container{padding:15px}
+      .panier-flottant{position:static;width:auto;margin:20px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-container">
+                 <img src="LOGO.jpg" alt="Logo" style="width:70px; height:70px;">
+    <h1 class="restaurant-name">LE GOURMET RESTAURANT</h1>
+  
+     <button class="menu-toggle">☰</button>
+     
+    <nav class="nav-under-title">
+      <a href="index.html">Accueil</a>
+      <a href="menu.html">Menu</a>
+      <a href="reservation.html">Réservation</a>
+      <a href="contact.html">Contact</a>
+      <a href="commande.html" class="active">Mes Commandes</a>
+      <a href="connexion.html">Connexion</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Panier flottant -->
+<div class="panier-flottant">
+  <div class="panier-header">
+    <div class="panier-title">Votre Panier <span id="panier-count">(0)</span></div>
+    <button class="btn-voir-commandes" onclick="window.location.href='commande.html'">Voir détails</button>
+  </div>
+  <div id="panier-items"></div>
+  <div class="panier-total">Total: <span id="panier-total-float">0</span>€</div>
+  <button class="btn-valider" onclick="validerCommande()">Valider la commande</button>
+</div>
+
+<main>
+  <div class="commandes-container">
+    <h1>Mes Commandes</h1>
+
+    <div class="user-info">
+      <p>Connecté en tant que : <span id="user-email" class="user-email"></span></p>
+    </div>
+
+    <!-- Panier actuel -->
+    <section id="current-cart">
+      <h2 class="section-title">Panier Actuel</h2>
+      <div id="panier-content"></div>
+      <div id="panier-total" style="text-align:right;font-weight:700;margin-top:15px;"></div>
+      <button id="valider-panier" class="btn" style="display:none;" onclick="validerCommande()">Valider le panier</button>
+      <div id="empty-cart-message" class="empty-message">
+        <p>Votre panier est actuellement vide.</p>
+        <a href="menu.html" class="btn">Voir le menu</a>
+      </div>
+    </section>
+
+    <!-- Historique des commandes -->
+    <section>
+      <h2 class="section-title">Historique des Commandes</h2>
+      <table id="commandes-table">
+        <thead>
+          <tr>
+            <th>N° Commande</th>
+            <th>Date</th>
+            <th>Articles</th>
+            <th>Total</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="empty-orders-message" class="empty-message">
+        <p>Vous n'avez passé aucune commande pour le moment.</p>
+        <a href="menu.html" class="btn">Voir le menu</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  if (user) {
+    // Synchronise les statuts au chargement
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const clientHistory = JSON.parse(localStorage.getItem(`commandes_${user.email}`)) || [];
+    
+    clientHistory.forEach(clientOrder => {
+      const matchingOrder = orders.find(o => o.id === clientOrder.id);
+      if (matchingOrder) {
+        clientOrder.statut = matchingOrder.status.toLowerCase();
+      }
+    });
+    
+    localStorage.setItem(`commandes_${user.email}`, JSON.stringify(clientHistory));
+    loadCommandHistory(user.email);
+  }
+});
+/* ====== Helpers ====== */
+if (!('crypto' in window) || !crypto.randomUUID) {
+  window.crypto = window.crypto || {};
+  crypto.randomUUID = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  if (!user) {
+    window.location.href = 'connexion.html';
+    return;
+  }
+  document.getElementById('user-email').textContent = user.email;
+
+  loadCurrentCart(user.email);
+  loadCommandHistory(user.email);
+  updateFloatingCart(user.email);
+});
+
+function loadCurrentCart(email) {
+  const panier = JSON.parse(localStorage.getItem('panier_' + email)) || [];
+  const panierContent = document.getElementById('panier-content');
+  const emptyCartMsg = document.getElementById('empty-cart-message');
+  const validerBtn = document.getElementById('valider-panier');
+  const panierTotalEl = document.getElementById('panier-total');
+
+  panierContent.innerHTML = '';
+
+  if (panier.length === 0) {
+    emptyCartMsg.style.display = 'block';
+    validerBtn.style.display = 'none';
+    panierTotalEl.textContent = '';
+    return;
+  }
+
+  emptyCartMsg.style.display = 'none';
+  validerBtn.style.display = 'inline-block';
+
+  let total = 0;
+  panier.forEach((item, index) => {
+    total += item.prix * item.quantite;
+    const itemElement = document.createElement('div');
+    itemElement.className = 'cart-item';
+    itemElement.innerHTML = `
+      <span>${item.nom} × ${item.quantite}</span>
+      <span>${(item.prix * item.quantite).toFixed(2)}€</span>
+      <button onclick="removeFromCart(${index}, '${email}')">×</button>
+    `;
+    panierContent.appendChild(itemElement);
+  });
+
+  panierTotalEl.textContent = 'Total: ' + total.toFixed(2) + '€';
+}
+
+function updateFloatingCart(email) {
+  const panier = JSON.parse(localStorage.getItem('panier_' + email)) || [];
+  const panierItems = document.getElementById('panier-items');
+  const panierTotalFloat = document.getElementById('panier-total-float');
+  const panierCount = document.getElementById('panier-count');
+
+  panierItems.innerHTML = '';
+  let total = 0;
+  let totalItems = 0;
+
+  panier.forEach((item, index) => {
+    total += item.prix * item.quantite;
+    totalItems += item.quantite;
+    const itemElement = document.createElement('div');
+    itemElement.className = 'panier-item';
+    itemElement.innerHTML = `
+      <span>${item.nom} × ${item.quantite}</span>
+      <span>${(item.prix * item.quantite).toFixed(2)}€</span>
+      <button onclick="removeFromCart(${index}, '${email}')" style="background:none;border:none;cursor:pointer;color:#e74c3c">×</button>
+    `;
+    panierItems.appendChild(itemElement);
+  });
+
+  panierTotalFloat.textContent = total.toFixed(2);
+  panierCount.textContent = '(' + totalItems + ')';
+}
+
+function removeFromCart(index, email) {
+  let panier = JSON.parse(localStorage.getItem('panier_' + email)) || [];
+  panier.splice(index, 1);
+  localStorage.setItem('panier_' + email, JSON.stringify(panier));
+  loadCurrentCart(email);
+  updateFloatingCart(email);
+}
+
+/**
+ * Valide le panier :
+ * - Ajoute l'objet commande au format COMPATIBLE ADMIN (clé "orders")
+ * - Duplique une version simplifiée dans "commandes" (compat ancien admin)
+ * - Garde l'historique utilisateur dans "commandes_<email>"
+ * - Vide le panier et redirige vers l'admin
+ */
+function validerCommande() {
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  if (!user) { 
+    window.location.href = 'connexion.html'; 
+    return; 
+  }
+
+  const panier = JSON.parse(localStorage.getItem('panier_' + user.email)) || [];
+  if (panier.length === 0) {
+    alert('Votre panier est vide !');
+    return;
+  }
+
+  // Conversion du panier en items formatés
+  const items = panier.map(item => ({
+    id: item.id || item.nom,
+    name: item.nom,
+    price: Number(item.prix),
+    qty: Number(item.quantite),
+    subtotal: Number(item.prix) * Number(item.quantite)
+  }));
+  
+  const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+
+  // Format principal (pour l'admin)
+  const commande = {
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    customer: {
+      name: user.nom || user.name || 'Client',
+      email: user.email,
+      phone: user.telephone || '',
+      address: user.adresse || ''
+    },
+    items: items,
+    total: total,
+    status: "En attente", // Statut initial
+    payment: "À définir",
+    notes: ""
+  };
+
+  // 1. Sauvegarde pour l'admin (format moderne)
+  const orders = JSON.parse(localStorage.getItem('orders')) || [];
+  orders.unshift(commande);
+  localStorage.setItem('orders', JSON.stringify(orders));
+
+  // 2. Format historique client
+  const historiqueClient = {
+    id: commande.id,
+    date: commande.createdAt,
+    articles: panier.map(item => ({
+      nom: item.nom,
+      prix: item.prix,
+      quantite: item.quantite
+    })),
+    statut: "en attente",
+    total: commande.total
+  };
+
+  // Sauvegarde historique
+  const clientHistory = JSON.parse(localStorage.getItem('commandes_' + user.email)) || [];
+  clientHistory.unshift(historiqueClient);
+  localStorage.setItem('commandes_' + user.email, JSON.stringify(clientHistory));
+
+  // 3. Vider le panier
+  localStorage.removeItem('panier_' + user.email);
+  
+  // Mise à jour UI
+  loadCurrentCart(user.email);
+  updateFloatingCart(user.email);
+  loadCommandHistory(user.email);
+
+  // Redirection intelligente
+  if (user.role === 'admin') {
+    window.location.href = 'admin.html';
+  } else {
+    alert(`Commande #${commande.id.substring(0, 8)} enregistrée !`);
+    window.location.href = 'commande.html'; 
+  }
+}
+
+// À placer séparément dans admin.js
+function synchroniserStatuts(email) {
+  const orders = JSON.parse(localStorage.getItem('orders')) || [];
+  const clientHistory = JSON.parse(localStorage.getItem('commandes_' + email)) || [];
+  
+  clientHistory.forEach(clientOrder => {
+    const adminOrder = orders.find(o => o.id === clientOrder.id);
+    if (adminOrder) {
+      const statuts = {
+        'En attente': 'en attente',
+        'Acceptée': 'acceptée', 
+        'Livrée': 'livrée',
+        'Annulée': 'annulée'
+      };
+      clientOrder.statut = statuts[adminOrder.status] || clientOrder.statut;
+    }
+  });
+  
+  localStorage.setItem('commandes_' + email, JSON.stringify(clientHistory));
+}
+
+
+function loadCommandHistory(email) {
+  synchroniserStatuts(email); // Synchronisation avant affichage
+  
+  const commandes = JSON.parse(localStorage.getItem('commandes_' + email)) || [];
+  const tbody = document.querySelector('#commandes-table tbody');
+  const emptyMsg = document.getElementById('empty-orders-message');
+  
+  tbody.innerHTML = '';
+
+  if (commandes.length === 0) {
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  
+  emptyMsg.style.display = 'none';
+
+  commandes.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(commande => {
+    const tr = document.createElement('tr');
+    const date = new Date(commande.date).toLocaleString('fr-FR');
+    
+    // Classes CSS cohérentes avec admin.html
+    const statusClass = {
+      'en attente': 'statut-en-attente',
+      'acceptée': 'statut-en-preparation',
+      'livrée': 'statut-livre',
+      'annulée': 'statut-annule'
+    }[commande.statut] || '';
+    
+    tr.innerHTML = `
+      <td>${commande.id.substring(0, 8)}...</td>
+      <td>${date}</td>
+      <td>${commande.articles.map(a => `${a.quantite}× ${a.nom}`).join('<br>')}</td>
+      <td>${commande.total.toFixed(2)}€</td>
+      <td><span class="statut ${statusClass}">${commande.statut}</span></td>
+    `;
+    
+    tbody.appendChild(tr);
+  });
+}
+
+</script>
+</body>
+</html>

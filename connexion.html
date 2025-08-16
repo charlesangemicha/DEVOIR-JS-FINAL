@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Le Gourmet</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+   
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Connexion</h1>
+            <p id="welcomeMessage">Bienvenue, veuillez vous identifier</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" required>
+            </div>
+            
+            <button type="submit" class="btn">Se connecter</button>
+        </form>
+
+        <div class="auth-redirect">
+            <p>Nouveau client ? <a href="inscription.html">Créez un compte</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+
+            // Détection admin
+            if (password === "micha2005" && email === "admin@legourmet.com") {
+                localStorage.setItem('currentUser', JSON.stringify({
+                    email,
+                    role: 'admin'
+                }));
+                window.location.href = "admin.html";
+                return;
+            }
+
+            // Connexion utilisateur normal
+            const user = allUsers.find(u => u.email === email && u.password === password);
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                // Gestion de la redirection après connexion
+                const urlParams = new URLSearchParams(window.location.search);
+                const from = urlParams.get('from');
+                
+                if (from === 'inscription') {
+                    if (localStorage.getItem('postRegisterAction') === 'completeOrder') {
+                        window.location.href = 'menu.html?from=connexion';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                    localStorage.removeItem('postRegisterAction');
+                } else {
+                    window.location.href = 'menu.html?from=connexion';
+                }
+            } else {
+                alert("Identifiants incorrects");
+            }
+        });
+
+        // Message spécial si retour après inscription
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('new')) {
+            document.getElementById('welcomeMessage').textContent = "Inscription validée ! Connectez-vous";
+        }
+         function connexion(e) {
+            e.preventDefault();
+            // Ici, vérifiez les identifiants en dur (pour test)
+            localStorage.setItem('currentUser', JSON.stringify({
+                nom: "Admin",
+                role: "admin"
+            }));
+            window.location.href = "admin.html";
+        }
+    </script>
+</body>
+</html>

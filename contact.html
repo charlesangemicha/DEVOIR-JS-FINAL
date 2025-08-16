@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contact - Le Gourmet</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="contact.css">
+    <link rel="stylesheet" href="responsive.css">
+
+        
+</head>
+<body>
+
+
+    <header>
+        
+        <div class="header-container">
+            <div class="logo">
+                 <img src="LOGO.jpg" alt="Logo" style="width:70px; height:70px;">
+            </div>
+            
+            <h1 class="restaurant-name">LE GOURMET RESTAURANT</h1>
+             <button class="menu-toggle">☰</button>
+           
+            <nav class="nav-under-title">
+                <a href="index.html">Accueil</a>
+                <a href="menu.html">Menu</a>
+                <a href="reservation.html">Réservation</a>
+                <a href="contact.html" class="active">Contact</a>
+                <a href="inscription.html">Connexion</a>
+            </nav>
+            </header>
+
+    <main class="contact-page">
+        <h1>Contactez-nous</h1>
+        
+        <div class="contact-container">
+            <section class="contact-info">
+                <h2>Informations de contact</h2>
+                <p><i class="fas fa-map-marker-alt"></i> Madeline, Cap-Haitien Haiti</p>
+                <p><i class="fas fa-phone"></i> +509 3523-3165/4416-7352</p>
+                <p><i class="fas fa-envelope"></i> contact@legourmet.com</p>
+                
+                <h2>Horaires d'ouverture</h2>
+                <p><i class="fas fa-clock"></i> Lundi - Vendredi: 12h - 14h30 / 19h - 22h30</p>
+                <p><i class="fas fa-clock"></i> Samedi - Dimanche: 19h - 23h</p>
+            </section>
+            
+            <section class="contact-form">
+                <h2>Envoyez-nous un message</h2>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="contact-name">Nom complet</label>
+                        <input type="text" id="contact-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-subject">Sujet</label>
+                        <input type="text" id="contact-subject" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact-message">Message</label>
+                        <textarea id="contact-message" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn">Envoyer</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+
+
+    <script src="main.js"></script>
+    <script src="theme.js"></script>
+    <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de l'envoi de message
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Récupération des valeurs
+        const nom = document.getElementById('contact-name').value.trim();
+        const email = document.getElementById('contact-email').value.trim();
+        const sujet = document.getElementById('contact-subject').value.trim();
+        const message = document.getElementById('contact-message').value.trim();
+        
+        try {
+            // Validation
+            if (!nom || !email || !sujet || !message) {
+                throw new Error("Tous les champs sont obligatoires");
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                throw new Error("Veuillez entrer un email valide");
+            }
+
+            // Format compatible avec admin.html
+            const nouveauMessage = {
+                id: crypto.randomUUID(),
+                createdAt: new Date().toISOString(),
+                name: nom,
+                email: email,
+                subject: sujet,
+                message: message,
+                status: 'non-lu'
+            };
+
+            // Sauvegarde dans deux formats pour compatibilité
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            messages.unshift(nouveauMessage);
+            localStorage.setItem('messages', JSON.stringify(messages));
+            
+            // Format alternatif (si utilisé ailleurs)
+            const contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+            contacts.unshift({
+                ...nouveauMessage,
+                nom: nouveauMessage.name, // alias pour compatibilité
+                sujet: nouveauMessage.subject // alias pour compatibilité
+            });
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+
+            // Feedback utilisateur
+            alert('Message envoyé avec succès ! Notre équipe vous contactera bientôt.');
+            this.reset();
+
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert(error.message || "Une erreur est survenue. Veuillez réessayer.");
+        }
+    });
+});
+</script>
+</body>
+</html>

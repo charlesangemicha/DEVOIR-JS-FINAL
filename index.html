@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Gourmet - Restaurant Gastronomique</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+    
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="logo">
+ <img src="LOGO.jpg" alt="Logo" style="width:70px; height:70px;">
+        </div>
+        
+        <h1 class="restaurant-name">LE GOURMET RESTAURANT</h1>
+         <button class="menu-toggle">☰</button>
+
+        <nav class="nav-under-title">
+            <a href="index.html">Accueil</a>
+            <a href="menu.html">Menu</a>
+            <a href="reservation.html">Réservation</a>
+            <a href="contact.html">Contact</a>
+            <a href="commande.html">Mes Commandes</a>
+             <div class="auth-section">
+        <a href="inscription.html" class="auth-btn" id="login-btn">Connexion</a>
+        <button id="logout-btn" class="auth-btn hidden">Déconnexion</button>
+            </div>
+
+        </nav>
+        
+        <button id="theme-btn">
+            <img id="sun" src="soleil.png" style="width:24px; display:block;">
+            <img id="moon" src="lune.png" style="width:24px; display:none;">
+        </button>
+    </div>
+    
+</header>
+    <main>
+<section class="hero">
+    <!-- Image de fond -->
+    <img 
+        src="background.jpg" 
+        alt="Restaurant Le Gourmet" 
+        class="hero-background"
+    
+        <section class="hero">
+            <h1>Bienvenue au Restaurant Le Gourmet</h1>
+            <p>Les meilleurs plats. Livrés vite. une expérience gourmande.</p>
+            <p>Menu dynamique, commandes locales, animations légères et performance optimisée. Conçu pour mobile et accessible.</p>
+            <p>Découvrez une expérience culinaire exceptionnelle</p>
+            <div class="cta-buttons">
+                <a href="menu.html" class="btn">Voir le Menu</a>
+                <a href="reservation.html" class="btn">Réserver</a>
+            </div>
+        </section>
+
+        <section class="about">
+            <h2>Notre Philosophie</h2>
+            <p>Le Gourmet propose une cuisine raffinée avec des produits frais et locaux. Notre chef étoilé revisite les classiques avec créativité pour votre plus grand plaisir.</p>
+        </section>
+
+        <section class="specialties">
+            <h2>Nos Spécialités</h2>
+            <div class="specialty-grid">
+                <div class="specialty-item">
+                    <img src="soupjoumou.jpg" alt="Spécialité 1">
+                    <h3>SOUPE DE GIRAUMON(SOUP JOUMOU)</h3>
+                    <p>plat traditionnelle haitien</p>
+<button class="btn-ajouter" 
+        onclick="ajouterSpecialite('SOUPE DE GIRAUMON', 22, 'soupjoumou.jpg')">
+    Ajouter
+</button>
+                </div>
+                <div class="specialty-item">
+                    <img src="rizDjondjon.jpg" alt="Spécialité 2">
+                    <h3>RIZ AU DJON DJON</h3>
+                    <p>riz au champignon noir</p>
+                     
+<button class="btn-ajouter" 
+        onclick="ajouterSpecialite('RIZ AU DJON DJON', 19, 'rizDjondjon.jpg')">
+    Ajouter
+</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Horaires</h3>
+                <p>Lundi - Vendredi: 12h - 14h30 / 19h - 22h30</p>
+                <p>Samedi - Dimanche: 19h - 23h</p>
+            </div>
+            
+           
+        <div class="copyright">
+            <p>&copy; 2025 Le Gourmet. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    
+    <script src="main.js"></script>
+    <script src="theme.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        
+        
+        const themeBtn = document.getElementById('theme-btn');
+const sun = document.getElementById('sun');
+const moon = document.getElementById('moon');
+
+// Fonction pour appliquer le thème
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        sun.style.display = 'none';
+        moon.style.display = 'block';
+        document.body.style.backgroundColor = '#121212';
+        document.body.style.color = 'white';
+    } else {
+        sun.style.display = 'block';
+        moon.style.display = 'none';
+        document.body.style.backgroundColor = 'white';
+        document.body.style.color = 'black';
+    }
+}
+
+// Appliquer le thème au chargement
+const savedTheme = localStorage.getItem('theme') || 'light';
+applyTheme(savedTheme);
+
+// Changement de thème au clic
+if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+        const newTheme = sun.style.display === 'block' ? 'dark' : 'light';
+        localStorage.setItem('theme', newTheme);
+        applyTheme(newTheme);
+    });
+}
+
+    </script>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+/* Menu Mobile */
+.menu-toggle {
+    display: none; /* Caché par défaut */
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    position: absolute;
+    right: 15px;
+    top: 20px;
+    z-index: 1000;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block; /* Visible sur mobile */
+    }
+    
+    .nav-under-title {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 70%;
+        height: 100vh;
+        background: rgb(240, 56, 11);
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px;
+        transition: left 0.3s ease;
+        z-index: 999;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .nav-under-title.active {
+        left: 0;
+    }
+    
+    /* Empêche le scroll quand menu ouvert */
+    body.menu-open {
+        overflow: hidden;
+    }
+}
+/* Styles pour la section d'authentification */
+.auth-section {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.auth-btn {
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+#login-btn {
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+#logout-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#logout-btn:hover {
+    background: #c0392b;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Adaptation mobile */
+@media (max-width: 768px) {
+    .auth-section {
+        flex-direction: column;
+        margin: 20px 0 0;
+        width: 100%;
+    }
+    
+    .auth-btn {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+}

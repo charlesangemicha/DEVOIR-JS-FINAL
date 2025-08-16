@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Admin - Le Gourmet</title>
+  <link rel="stylesheet" href="responsive.css">
+  <style>
+    /* Badges de statut */
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .status-badge[data-status="En attente"] {
+      background: #FFF3CD;
+      color: #856404;
+    }
+
+    .status-badge[data-status="Acceptée"] {
+      background: #D4EDDA;
+      color: #155724;
+    }
+
+    .status-badge[data-status="Annulée"] {
+      background: #F8D7DA;
+      color: #721C24;
+    }
+
+    /* Boutons d'action */
+    .btn-accept,
+    .btn-cancel,
+    .btn-delete {
+      padding: 5px 10px;
+      margin: 2px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-accept {
+      background: #28a745;
+    }
+
+    .btn-cancel {
+      background: #dc3545;
+    }
+
+    .btn-delete {
+      background: #6c757d;
+    }
+
+    /* Lignes colorées */
+    tr.order-en-attente {
+      background-color: #FFF3CD20;
+    }
+
+    tr.order-annulée {
+      background-color: #F8D7DA20;
+    }
+
+    /* Alertes */
+    .admin-alert {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #333;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      z-index: 1000;
+    }
+
+    .btn-accept {
+      background-color: #28a745;
+      color: white;
+      margin-right: 5px;
+    }
+
+    .btn-cancel {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .actions {
+      white-space: nowrap;
+    }
+
+    .admin-actions {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn i {
+      margin-right: 5px;
+    }
+
+    .status {
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.9em;
+    }
+
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --light: #ecf0f1;
+      --dark: #34495e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 1rem;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 5px 5px 0 0;
+      margin-right: 5px;
+      background-color: #f1f1f1;
+    }
+
+    .tab.active {
+      background-color: white;
+      border-color: #ddd;
+      border-bottom: 1px solid white;
+      margin-bottom: -1px;
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 0 0 5px 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .status {
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .status-pending {
+      background-color: #fff8e1;
+      color: var(--warning);
+    }
+
+    .status-accepted {
+      background-color: #e3f2fd;
+      color: var(--secondary);
+    }
+
+    .status-delivered {
+      background-color: #e8f5e9;
+      color: var(--success);
+    }
+
+    .status-cancelled {
+      background-color: #ffebee;
+      color: var(--danger);
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-right: 5px;
+    }
+
+    .btn-accept {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-deliver {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    .btn-cancel {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .btn-edit {
+      background-color: var(--secondary);
+      color: white;
+    }
+
+    .btn-delete {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .form-actions {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .alert {
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <h1>Administration - Le Gourmet</h1>
+    </div>
+    
+  </header>
+
+  <div class="admin-actions">
+    <a href="index.html" class="btn btn-secondary">
+      <i class="fas fa-home"></i> Retour au site
+    </a>
+    <button id="logout-btn" class="btn btn-danger">
+      <i class="fas fa-sign-out-alt"></i> Déconnexion
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" data-tab="commandes">Commandes</div>
+      <div class="tab" data-tab="reservations">Réservations</div>
+      <div class="tab" data-tab="menu">Menu</div>
+      <div class="tab" data-tab="contacts">Contacts</div>
+    </div>
+
+    <!-- Commandes -->
+    <div id="commandes" class="tab-content active">
+      <h2>Gestion des Commandes</h2>
+      <table id="orders-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Réservations -->
+    <div id="reservations" class="tab-content">
+      <h2>Gestion des Réservations</h2>
+      <table id="reservations-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date/Heure</th>
+            <th>Nom</th>
+            <th>Personnes</th>
+            <th>Contact</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Menu -->
+    <div id="menu" class="tab-content">
+      <h2>Gestion du Menu</h2>
+      <div id="menu-form-container">
+        <form id="menu-form">
+          <input type="hidden" id="item-id">
+          <div class="form-group">
+            <label for="item-name">Nom du plat</label>
+            <input type="text" id="item-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="item-price">Prix (€)</label>
+            <input type="number" id="item-price" class="form-control" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="item-category">Catégorie</label>
+            <select id="item-category" class="form-control" required>
+              <option value="">Sélectionner...</option>
+              <option value="Entrée">Entrée</option>
+              <option value="Plat principal">Plat principal</option>
+              <option value="Dessert">Dessert</option>
+              <option value="Boisson">Boisson</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="item-description">Description</label>
+            <textarea id="item-description" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="item-image">URL de l'image</label>
+            <input type="text" id="item-image" class="form-control">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-cancel" id="cancel-edit">Annuler</button>
+            <button type="submit" class="btn btn-accept">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+
+      <table id="menu-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Prix</th>
+            <th>Catégorie</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Contacts -->
+    <div id="contacts" class="tab-content">
+      <h2>Messages de Contact</h2>
+      <table id="contacts-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Sujet</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Gestion des onglets
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function () {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+          this.classList.add('active');
+          document.getElementById(this.dataset.tab).classList.add('active');
+        });
+      });
+
+      // Chargement initial des données
+      loadOrders();
+      loadReservations();
+      loadMenuItems();
+      loadContacts();
+
+      // Gestion du formulaire menu
+      const menuForm = document.getElementById('menu-form');
+      const cancelEditBtn = document.getElementById('cancel-edit');
+
+      menuForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        saveMenuItem();
+      });
+
+      cancelEditBtn.addEventListener('click', function () {
+        resetMenuForm();
+      });
+
+      // Rafraîchissement automatique toutes les 30 secondes
+      setInterval(() => {
+        loadOrders();
+        loadReservations();
+        loadContacts();
+      }, 30000);
+    });
+
+    // ===== COMMANDES =====
+    function loadOrders() {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const tbody = document.querySelector('#orders-table tbody');
+
+      // Trie par date (récentes en premier)
+      orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      tbody.innerHTML = '';
+
+      orders.forEach(order => {
+        const tr = document.createElement('tr');
+        const date = new Date(order.createdAt).toLocaleString('fr-FR');
+        const total = order.total.toFixed(2) + '€';
+
+        let statusClass = 'status-pending';
+        if (order.status === 'Acceptée') statusClass = 'status-accepted';
+        else if (order.status === 'Livrée') statusClass = 'status-delivered';
+        else if (order.status === 'Annulée') statusClass = 'status-cancelled';
+
+        tr.innerHTML = `
+          <td>${order.id.substring(0, 8)}...</td>
+          <td>${date}</td>
+          <td>${order.customer.name}<br><small>${order.customer.email}</small></td>
+          <td>${total}</td>
+          <td><span class="status ${statusClass}">${order.status}</span></td>
+          <td>
+            ${order.status === 'En attente' ? `
+              <button class="btn btn-accept" onclick="updateOrderStatus('${order.id}', 'Acceptée')">Accepter</button>
+              <button class="btn btn-cancel" onclick="updateOrderStatus('${order.id}', 'Annulée')">Refuser</button>
+            ` : ''}
+            ${order.status === 'Acceptée' ? `
+              <button class="btn btn-deliver" onclick="updateOrderStatus('${order.id}', 'Livrée')">Livrer</button>
+            ` : ''}
+            <button class="btn" onclick="viewOrderDetails('${order.id}')">Voir</button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const orderIndex = orders.findIndex(o => o.id === orderId);
+
+      if (orderIndex === -1) return;
+
+      orders[orderIndex].status = newStatus;
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Mise à jour de l'historique client
+      updateClientOrderStatus(orderId, newStatus);
+
+      loadOrders();
+    }
+
+    function updateClientOrderStatus(orderId, newStatus) {
+      const clientEmail = getClientEmailByOrderId(orderId);
+      if (!clientEmail) return;
+
+      const clientOrders = JSON.parse(localStorage.getItem(`commandes_${clientEmail}`)) || [];
+      const orderIndex = clientOrders.findIndex(o => o.id === orderId);
+
+      if (orderIndex !== -1) {
+        clientOrders[orderIndex].statut = newStatus.toLowerCase();
+        localStorage.setItem(`commandes_${clientEmail}`, JSON.stringify(clientOrders));
+      }
+    }
+
+    function getClientEmailByOrderId(orderId) {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const order = orders.find(o => o.id === orderId);
+      return order?.customer?.email;
+    }
+
+    function viewOrderDetails(orderId) {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const order = orders.find(o => o.id === orderId);
+
+      if (!order) return;
+
+      const date = new Date(order.createdAt).toLocaleString('fr-FR');
+      const itemsList = order.items.map(item =>
+        `${item.qty} × ${item.name} - ${item.price.toFixed(2)}€ = ${item.subtotal.toFixed(2)}€`
+      ).join('\n');
+
+      alert(`Détails de la commande #${order.id}\n\n` +
+        `Date: ${date}\n` +
+        `Client: ${order.customer.name}\n` +
+        `Email: ${order.customer.email}\n` +
+        `Téléphone: ${order.customer.phone || 'Non fourni'}\n` +
+        `Adresse: ${order.customer.address || 'Non fournie'}\n` +
+        `Statut: ${order.status}\n` +
+        `Paiement: ${order.payment}\n\n` +
+        `Articles:\n${itemsList}\n\n` +
+        `Total: ${order.total.toFixed(2)}€\n\n` +
+        `Notes: ${order.notes || 'Aucune note'}`);
+    }
+
+    // ===== RESERVATIONS =====
+    function loadReservations() {
+      const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+      const tbody = document.querySelector('#reservations-table tbody');
+
+      // Trie par date (récentes en premier)
+      reservations.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+
+      tbody.innerHTML = '';
+
+      reservations.forEach(res => {
+        const tr = document.createElement('tr');
+        const datetime = `${res.date} à ${res.time}`;
+
+        tr.innerHTML = `
+          <td>${res.id.substring(0, 8)}...</td>
+          <td>${datetime}</td>
+          <td>${res.fullName}</td>
+          <td>${res.people}</td>
+          <td>${res.email}<br>${res.phone || ''}</td>
+          <td>
+            <button class="btn btn-accept" onclick="acceptReservation('${res.id}')">Accepter</button>
+            <button class="btn btn-cancel" onclick="cancelReservation('${res.id}')">Refuser</button>
+            <button class="btn" onclick="viewReservationDetails('${res.id}')">Voir</button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function acceptReservation(reservationId) {
+      updateReservationStatus(reservationId, 'Acceptée');
+    }
+
+    function cancelReservation(reservationId) {
+      updateReservationStatus(reservationId, 'Refusée');
+    }
+
+    function updateReservationStatus(reservationId, newStatus) {
+      const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+      const resIndex = reservations.findIndex(r => r.id === reservationId);
+
+      if (resIndex === -1) return;
+
+      reservations[resIndex].status = newStatus;
+      localStorage.setItem('reservations', JSON.stringify(reservations));
+
+      loadReservations();
+    }
+
+    function viewReservationDetails(reservationId) {
+      const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+      const res = reservations.find(r => r.id === reservationId);
+
+      if (!res) return;
+
+      alert(`Détails de la réservation #${res.id}\n\n` +
+        `Nom: ${res.fullName}\n` +
+        `Email: ${res.email}\n` +
+        `Téléphone: ${res.phone || 'Non fourni'}\n` +
+        `Date: ${res.date} à ${res.time}\n` +
+        `Personnes: ${res.people}\n` +
+        `Statut: ${res.status || 'En attente'}\n\n` +
+        `Notes: ${res.notes || 'Aucune note'}`);
+    }
+
+    // ===== MENU =====
+    function loadMenuItems() {
+      const menuItems = JSON.parse(localStorage.getItem('menu')) || [];
+      const tbody = document.querySelector('#menu-table tbody');
+
+      tbody.innerHTML = '';
+
+      menuItems.forEach(item => {
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.price.toFixed(2)}€</td>
+          <td>${item.category}</td>
+          <td>
+            <button class="btn btn-edit" onclick="editMenuItem('${item.id}')">Modifier</button>
+            <button class="btn btn-delete" onclick="deleteMenuItem('${item.id}')">Supprimer</button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function editMenuItem(itemId) {
+      const menuItems = JSON.parse(localStorage.getItem('menu')) || [];
+      const item = menuItems.find(i => i.id === itemId);
+
+      if (!item) return;
+
+      document.getElementById('item-id').value = item.id;
+      document.getElementById('item-name').value = item.name;
+      document.getElementById('item-price').value = item.price;
+      document.getElementById('item-category').value = item.category;
+      document.getElementById('item-description').value = item.description || '';
+      document.getElementById('item-image').value = item.image || '';
+
+      document.getElementById('menu-form-container').scrollIntoView();
+    }
+
+    function saveMenuItem() {
+      const menuItems = JSON.parse(localStorage.getItem('menu')) || [];
+      const itemId = document.getElementById('item-id').value;
+      const isEdit = !!itemId;
+
+      const itemData = {
+        id: itemId || crypto.randomUUID(),
+        name: document.getElementById('item-name').value,
+        price: parseFloat(document.getElementById('item-price').value),
+        category: document.getElementById('item-category').value,
+        description: document.getElementById('item-description').value,
+        image: document.getElementById('item-image').value
+      };
+
+      if (isEdit) {
+        const index = menuItems.findIndex(i => i.id === itemId);
+        if (index !== -1) menuItems[index] = itemData;
+      } else {
+        menuItems.push(itemData);
+      }
+
+      localStorage.setItem('menu', JSON.stringify(menuItems));
+      resetMenuForm();
+      loadMenuItems();
+    }
+
+    function deleteMenuItem(itemId) {
+      if (!confirm('Supprimer ce plat du menu ?')) return;
+
+      const menuItems = JSON.parse(localStorage.getItem('menu')) || [];
+      const updatedItems = menuItems.filter(i => i.id !== itemId);
+
+      localStorage.setItem('menu', JSON.stringify(updatedItems));
+      loadMenuItems();
+    }
+
+    function resetMenuForm() {
+      document.getElementById('menu-form').reset();
+      document.getElementById('item-id').value = '';
+    }
+
+    // ===== CONTACTS =====
+    function loadContacts() {
+      const contacts = JSON.parse(localStorage.getItem('messages')) || [];
+      const tbody = document.querySelector('#contacts-table tbody');
+
+      // Trie par date (récentes en premier)
+      contacts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      tbody.innerHTML = '';
+
+      contacts.forEach(contact => {
+        const tr = document.createElement('tr');
+        const date = new Date(contact.createdAt).toLocaleString('fr-FR');
+
+        tr.innerHTML = `
+          <td>${date}</td>
+          <td>${contact.name}</td>
+          <td>${contact.email}</td>
+          <td>${contact.subject}</td>
+          <td>
+            <button class="btn" onclick="viewContactMessage('${contact.id}')">Voir</button>
+            <button class="btn btn-delete" onclick="deleteContactMessage('${contact.id}')">Supprimer</button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function viewContactMessage(messageId) {
+      const messages = JSON.parse(localStorage.getItem('messages')) || [];
+      const msg = messages.find(m => m.id === messageId);
+
+      if (!msg) return;
+
+      const date = new Date(msg.createdAt).toLocaleString('fr-FR');
+
+      alert(`Message de ${msg.name} (${msg.email})\n\n` +
+        `Date: ${date}\n` +
+        `Sujet: ${msg.subject}\n\n` +
+        `Message:\n${msg.message}`);
+    }
+
+    function deleteContactMessage(messageId) {
+      if (!confirm('Supprimer ce message ?')) return;
+
+      const messages = JSON.parse(localStorage.getItem('messages')) || [];
+      const updatedMessages = messages.filter(m => m.id !== messageId);
+
+      localStorage.setItem('messages', JSON.stringify(updatedMessages));
+      loadContacts();
+    }
+  </script>
+  <script src="admin.js"></script>
+</body>
+
+</html>

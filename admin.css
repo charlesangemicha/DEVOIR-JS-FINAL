@@ -1,0 +1,200 @@
+
+/* ===== RESET ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== VARIABLES ===== */
+:root {
+    --primary-color: #1E3A8A;   /* Bleu profond */
+    --secondary-color: #2563EB; /* Bleu clair */
+    --accent-color: #F59E0B;    /* Orange pour actions */
+    --bg-color: #F3F4F6;        /* Gris clair fond */
+    --card-bg: #FFFFFF;          /* Blanc cartes/tables */
+    --text-color: #111827;       /* Gris très foncé */
+    --danger-color: #DC2626;     /* Rouge pour supprimer */
+    --success-color: #16A34A;    /* Vert */
+    --hover-color: #E5E7EB;      /* Gris hover */
+}
+
+/* ===== GLOBAL ===== */
+body {
+    display: flex;
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    color: var(--text-color);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 250px;
+    background-color: var(--primary-color);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: fixed;
+    height: 100%;
+}
+
+.sidebar h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.sidebar-menu a {
+    display: block;
+    padding: 12px 20px;
+    margin: 5px 0;
+    border-radius: 6px;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.sidebar-menu a.active,
+.sidebar-menu a:hover {
+    background-color: var(--secondary-color);
+}
+
+#logout {
+    margin-top: auto;
+    background-color: var(--danger-color);
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 6px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+    margin-left: 270px;
+    padding: 30px;
+    width: calc(100% - 270px);
+}
+
+/* Sections */
+.admin-section {
+    display: none;
+}
+
+.admin-section.active {
+    display: block;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card-bg);
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+thead {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #F9FAFB;
+}
+
+tbody tr:hover {
+    background-color: var(--hover-color);
+}
+
+/* Buttons */
+button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+button.btn-edit {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+button.btn-edit:hover {
+    opacity: 0.9;
+}
+
+button.btn-delete {
+    background-color: var(--danger-color);
+    color: #fff;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 90%;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 8px 0 16px 0;
+    border: 1px solid #D1D5DB;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+button[type="submit"] {
+    background-color: var(--secondary-color);
+    color: #fff;
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    opacity: 0.9;
+}
+
+/* Images plats */
+td img {
+    border-radius: 6px;
+}
